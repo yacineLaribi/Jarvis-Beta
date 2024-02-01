@@ -10,14 +10,28 @@ import os
 import time
 import subprocess
 import pyautogui
+import serial
+import keyboard
+import time
+#arduino orders 1 (lights up an led for 2 seconds )
+#you can change the orders from the arduino ide  
+def arduino_orders1():
+    # arduino_serial = serial.Serial('COM10', 9600)
+    # time.sleep(2)
+    arduino_serial.write('1'.encode())
+    time.sleep(2)
+    ''' arduino_serial.close() #in case you want to close the serial after using the arduino just once
+     but in this case you should add the 2 lines i commented ! just to initialize the Arduino once again ...'''
+
+        
 
 #Text To Speech
-
 def speak(audio):
     tts = gTTS(text=audio, lang='en-au')
     tts.save("output.mp3")
     os.system("start output.mp3")
 
+#This feature is optional , to let jarvis greet you !
 def wish():
     hour = int(datetime.datetime.now().hour)
     if hour >= 0 and hour<12:
@@ -46,9 +60,12 @@ def takecom():
         return "none"
     return text
 
+
 #for main function                               
 if __name__ == "__main__":
     wish()
+    arduino_serial = serial.Serial('COM10', 9600)
+    time.sleep(2)
     while True:
         query = takecom().lower()
 
@@ -64,6 +81,10 @@ if __name__ == "__main__":
         elif 'open youtube' in query or "open video online" in query or "nassim" in query:
             webbrowser.open("www.youtube.com")
             speak("opening youtube")
+        elif 'open light' in query or "light" in query or "turn the light" in query:
+            speak("okay")
+            arduino_orders1()
+            time.sleep(2)
         elif 'open github' in query:
             webbrowser.open("https://www.github.com")
             speak("opening github")  
@@ -173,3 +194,7 @@ if __name__ == "__main__":
             print(res_g)
             speak(res_g)
             webbrowser.open(g_url+temp)       
+
+'''Basically the code is not really optimized cuz the are thousands of if else statements here
+but if you assure running it on a good cpu , you will get a wonderful results , and with the perfect 
+arduino commands you can recreate jarvis ironman's house perfectly '''            
